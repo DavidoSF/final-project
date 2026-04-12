@@ -1,0 +1,106 @@
+<div class="page-shell">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Appointment Management</p>
+      <h1>Appointments</h1>
+      <p class="subtitle">Track bookings, filter requests, and move appointments through their lifecycle.</p>
+    </div>
+    <div class="header-actions">
+      <a class="btn btn-secondary" routerLink="/dashboard">Back to dashboard</a>
+      <a class="btn btn-primary" routerLink="/appointments/create">Create appointment</a>
+    </div>
+  </header>
+
+  <section class="filters-card">
+    <form [formGroup]="filterForm" class="filters-grid">
+      <label>
+        <span>Status</span>
+        <select formControlName="status">
+          <option value="">All statuses</option>
+          @for (status of selectableStatuses; track status) {
+            <option [value]="status">{{ status }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        <span>Service</span>
+        <select formControlName="serviceId">
+          <option value="">All services</option>
+          @if (services$ | async; as services) {
+            @for (service of services; track service.id) {
+              <option [value]="service.id">{{ service.name }}</option>
+            }
+          }
+        </select>
+      </label>
+
+      <label>
+        <span>Client</span>
+        <select formControlName="clientId">
+          <option value="">All clients</option>
+          @if (clients$ | async; as clients) {
+            @for (client of clients; track client.id) {
+              <option [value]="client.id">{{ client.fullName }}</option>
+            }
+          }
+        </select>
+      </label>
+    </form>
+  </section>
+
+  <section class="table-card">
+    <div class="table-head">
+      <h2>Appointment List</h2>
+    </div>
+
+    @if (appointments$ | async; as appointments) {
+      @if (appointments.length) {
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Service</th>
+                <th>Scheduled date</th>
+                <th>Staff</th>
+                <th>Status</th>
+                <th>Price</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (appointment of appointments; track trackByAppointment($index, appointment)) {
+                <tr>
+                  <td>
+                    <strong>{{ appointment.clientName }}</strong>
+                    <p>{{ appointment.notes || 'No notes provided.' }}</p>
+                  </td>
+                  <td>{{ appointment.serviceName }}</td>
+                  <td>{{ appointment.scheduledDate | date: 'medium' }}</td>
+                  <td>{{ appointment.assignedStaffName }}</td>
+                  <td>
+                    <span class="status-chip" [class]="getStatusClass(appointment.status)">
+                      {{ appointment.status }}
+                    </span>
+                  </td>
+                  <td>{{ appointment.priceAtBooking | currency }}</td>
+                  <td>
+                    <a class="text-link" [routerLink]="['/appointments', appointment.id, 'status']">
+                      Update status
+                    </a>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <h3>No appointments match those filters</h3>
+          <p>Try broadening the filters or create a new appointment.</p>
+        </div>
+      }
+    }
+  </section>
+</div>
