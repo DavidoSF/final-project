@@ -1,6 +1,9 @@
 <div class="dashboard-layout">
   <header class="topbar">
     <span class="brand">SME Service Manager</span>
+    <nav class="topbar-nav">
+      <a class="nav-link" routerLink="/services" routerLinkActive="nav-link-active">Services</a>
+    </nav>
     @if (currentUser$ | async; as user) {
       <div class="user-info">
         <span class="user-name">{{ user.fullName }}</span>
@@ -15,6 +18,11 @@
     @if (isAdmin$ | async) {
       <p class="admin-notice">You have <strong>Admin</strong> access.</p>
     }
-    <p>Welcome! Use the navigation to manage clients, services, and appointments.</p>
+    <div class="quick-links">
+      <a class="quick-card" routerLink="/services">
+        <span class="quick-card-title">Services</span>
+        <span class="quick-card-desc">Manage your service catalogue</span>
+      </a>
+    </div>
   </main>
 </div>
