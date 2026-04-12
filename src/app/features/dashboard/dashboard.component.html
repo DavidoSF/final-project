@@ -1,0 +1,20 @@
+<div class="dashboard-layout">
+  <header class="topbar">
+    <span class="brand">SME Service Manager</span>
+    @if (currentUser$ | async; as user) {
+      <div class="user-info">
+        <span class="user-name">{{ user.fullName }}</span>
+        <span class="user-role" [class.admin]="user.role === 'Admin'">{{ user.role }}</span>
+        <button class="btn-logout" (click)="onLogout()">Sign out</button>
+      </div>
+    }
+  </header>
+
+  <main class="main-content">
+    <h2>Dashboard</h2>
+    @if (isAdmin$ | async) {
+      <p class="admin-notice">You have <strong>Admin</strong> access.</p>
+    }
+    <p>Welcome! Use the navigation to manage clients, services, and appointments.</p>
+  </main>
+</div>
