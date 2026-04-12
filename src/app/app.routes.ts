@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -17,6 +18,24 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent)
+  },
+  {
+    path: 'clients',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/clients/client-list/client-list.component').then((m) => m.ClientListComponent)
+  },
+  {
+    path: 'clients/new',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () =>
+      import('./features/clients/client-form/client-form.component').then((m) => m.ClientFormComponent)
+  },
+  {
+    path: 'clients/:id/edit',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () =>
+      import('./features/clients/client-form/client-form.component').then((m) => m.ClientFormComponent)
   },
   {
     path: 'services',

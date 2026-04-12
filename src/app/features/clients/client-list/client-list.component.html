@@ -1,0 +1,71 @@
+<div class="page-layout">
+  <header class="topbar">
+    <span class="brand">SME Service Manager</span>
+    <nav class="topbar-nav">
+      <button class="nav-link" (click)="onBack()">Dashboard</button>
+      <span class="nav-active">Clients</span>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h2>Clients</h2>
+      @if (isAdmin$ | async) {
+        <button class="btn-primary" (click)="onAddNew()">+ Add Client</button>
+      }
+    </div>
+
+    @if (error$ | async; as errorMsg) {
+      <div class="alert-error" role="alert">{{ errorMsg }}</div>
+    }
+
+    @if (isLoading$ | async) {
+      <div class="loading-state">
+        <span class="spinner"></span>
+        Loading clients…
+      </div>
+    }
+
+    @if (clients$ | async; as clients) {
+      @if (!(isLoading$ | async)) {
+        @if (clients.length === 0) {
+          <div class="empty-state">
+            <p>No clients found.</p>
+          </div>
+        } @else {
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Full name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Company</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (client of clients; track client.id) {
+                  <tr>
+                    <td class="td-name">{{ client.fullName }}</td>
+                    <td>{{ client.email }}</td>
+                    <td>{{ client.phoneNumber }}</td>
+                    <td>{{ client.companyName }}</td>
+                    <td class="td-actions">
+                      @if (isAdmin$ | async) {
+                        <button class="btn-icon btn-edit" title="Edit" (click)="onEdit(client)">Edit</button>
+                      } @else {
+                        <span class="muted">—</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+    }
+  </main>
+</div>
+

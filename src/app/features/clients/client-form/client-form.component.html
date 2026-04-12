@@ -1,0 +1,96 @@
+<div class="page-layout">
+  <header class="topbar">
+    <span class="brand">SME Service Manager</span>
+    <nav class="topbar-nav">
+      <button class="nav-link" type="button" (click)="onCancel()">← Back to Clients</button>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <div class="form-card">
+      <h2>{{ isEditMode ? 'Edit Client' : 'New Client' }}</h2>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-group">
+          <label for="fullName">Full name</label>
+          <input
+            id="fullName"
+            type="text"
+            formControlName="fullName"
+            placeholder="e.g. Jane Doe"
+            [class.is-invalid]="field('fullName')?.invalid && field('fullName')?.touched"
+          />
+          @if (field('fullName')?.errors?.['required'] && field('fullName')?.touched) {
+            <span class="error-msg">Full name is required.</span>
+          } @else if (field('fullName')?.errors?.['maxlength'] && field('fullName')?.touched) {
+            <span class="error-msg">Full name cannot exceed 200 characters.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="e.g. jane@example.com"
+            [class.is-invalid]="field('email')?.invalid && field('email')?.touched"
+          />
+          @if (field('email')?.errors?.['required'] && field('email')?.touched) {
+            <span class="error-msg">Email is required.</span>
+          } @else if (field('email')?.errors?.['email'] && field('email')?.touched) {
+            <span class="error-msg">Enter a valid email.</span>
+          } @else if (field('email')?.errors?.['maxlength'] && field('email')?.touched) {
+            <span class="error-msg">Email cannot exceed 256 characters.</span>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phoneNumber">Phone</label>
+            <input
+              id="phoneNumber"
+              type="text"
+              formControlName="phoneNumber"
+              placeholder="e.g. +33…"
+              [class.is-invalid]="field('phoneNumber')?.invalid && field('phoneNumber')?.touched"
+            />
+            @if (field('phoneNumber')?.errors?.['maxlength'] && field('phoneNumber')?.touched) {
+              <span class="error-msg">Phone number cannot exceed 30 characters.</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="companyName">Company</label>
+            <input
+              id="companyName"
+              type="text"
+              formControlName="companyName"
+              placeholder="e.g. Acme Inc."
+              [class.is-invalid]="field('companyName')?.invalid && field('companyName')?.touched"
+            />
+            @if (field('companyName')?.errors?.['maxlength'] && field('companyName')?.touched) {
+              <span class="error-msg">Company name cannot exceed 200 characters.</span>
+            }
+          </div>
+        </div>
+
+        @if (error$ | async; as errorMsg) {
+          <div class="alert-error" role="alert">{{ errorMsg }}</div>
+        }
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="onCancel()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="(isLoading$ | async) === true">
+            @if (isLoading$ | async) {
+              <span class="spinner" aria-hidden="true"></span>
+              Saving…
+            } @else {
+              {{ isEditMode ? 'Save Changes' : 'Create Client' }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
