@@ -19,6 +19,24 @@ export const routes: Routes = [
       import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent)
   },
   {
+    path: 'services',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/services/list/services-list.component').then((m) => m.ServicesListComponent)
+  },
+  {
+    path: 'services/new',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/services/form/service-form.component').then((m) => m.ServiceFormComponent)
+  },
+  {
+    path: 'services/:id/edit',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/services/form/service-form.component').then((m) => m.ServiceFormComponent)
+  },
+  {
     path: '**',
     redirectTo: 'dashboard'
   }

@@ -9,13 +9,15 @@ import { routes } from './app.routes';
 import { authReducer } from './store/auth/auth.reducer';
 import * as authEffects from './store/auth/auth.effects';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { serviceReducer } from './store/service/service.reducer';
+import * as serviceEffects from './store/service/service.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
-    provideStore({ auth: authReducer }),
-    provideEffects(authEffects),
+    provideStore({ auth: authReducer, service: serviceReducer }),
+    provideEffects(authEffects, serviceEffects),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() })
   ]
 };
