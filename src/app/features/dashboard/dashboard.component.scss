@@ -1,0 +1,72 @@
+.dashboard-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f7fafc;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #2d3748;
+  color: #fff;
+  padding: 0 1.5rem;
+  height: 56px;
+}
+
+.brand {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-name {
+  font-size: 0.9rem;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: #4a5568;
+
+  &.admin {
+    background: #2b6cb0;
+  }
+}
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  padding: 0.3rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.main-content {
+  padding: 2rem 1.5rem;
+
+  h2 {
+    font-size: 1.5rem;
+    color: #1a202c;
+    margin: 0 0 1rem;
+  }
+}
+
+.admin-notice {
+  color: #2b6cb0;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
