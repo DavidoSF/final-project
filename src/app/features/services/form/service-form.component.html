@@ -1,0 +1,107 @@
+<div class="page-layout">
+  <header class="topbar">
+    <span class="brand">SME Service Manager</span>
+    <nav class="topbar-nav">
+      <button class="nav-link" (click)="onCancel()">← Back to Services</button>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <div class="form-card">
+      <h2>{{ isEditMode ? 'Edit Service' : 'New Service' }}</h2>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            placeholder="e.g. Haircut"
+            [class.is-invalid]="field('name')?.invalid && field('name')?.touched"
+          />
+          @if (field('name')?.errors?.['required'] && field('name')?.touched) {
+            <span class="error-msg">Name is required.</span>
+          } @else if (field('name')?.errors?.['maxlength'] && field('name')?.touched) {
+            <span class="error-msg">Name cannot exceed 100 characters.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            formControlName="description"
+            rows="3"
+            placeholder="Describe the service…"
+            [class.is-invalid]="field('description')?.invalid && field('description')?.touched"
+          ></textarea>
+          @if (field('description')?.errors?.['required'] && field('description')?.touched) {
+            <span class="error-msg">Description is required.</span>
+          } @else if (field('description')?.errors?.['maxlength'] && field('description')?.touched) {
+            <span class="error-msg">Description cannot exceed 500 characters.</span>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="price">Price (€)</label>
+            <input
+              id="price"
+              type="number"
+              formControlName="price"
+              placeholder="0.00"
+              min="0"
+              step="0.01"
+              [class.is-invalid]="field('price')?.invalid && field('price')?.touched"
+            />
+            @if (field('price')?.errors?.['required'] && field('price')?.touched) {
+              <span class="error-msg">Price is required.</span>
+            } @else if (field('price')?.errors?.['min'] && field('price')?.touched) {
+              <span class="error-msg">Price must be 0 or more.</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="durationInMinutes">Duration (minutes)</label>
+            <input
+              id="durationInMinutes"
+              type="number"
+              formControlName="durationInMinutes"
+              placeholder="60"
+              min="1"
+              [class.is-invalid]="field('durationInMinutes')?.invalid && field('durationInMinutes')?.touched"
+            />
+            @if (field('durationInMinutes')?.errors?.['required'] && field('durationInMinutes')?.touched) {
+              <span class="error-msg">Duration is required.</span>
+            } @else if (field('durationInMinutes')?.errors?.['min'] && field('durationInMinutes')?.touched) {
+              <span class="error-msg">Duration must be at least 1 minute.</span>
+            }
+          </div>
+        </div>
+
+        @if (error$ | async; as errorMsg) {
+          <div class="alert-error" role="alert">{{ errorMsg }}</div>
+        }
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="onCancel()">Cancel</button>
+          <button
+            type="submit"
+            class="btn-primary"
+            [disabled]="(isLoading$ | async) === true"
+          >
+            @if (isLoading$ | async) {
+              <span class="spinner" aria-hidden="true"></span>
+              Saving…
+            } @else {
+              {{ isEditMode ? 'Save Changes' : 'Create Service' }}
+            }
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </main>
+</div>

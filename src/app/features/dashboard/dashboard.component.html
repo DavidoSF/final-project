@@ -1,6 +1,10 @@
 <div class="dashboard-layout">
   <header class="topbar">
     <span class="brand">SME Service Manager</span>
+    <nav class="topbar-nav">
+      <a class="nav-link" routerLink="/clients" routerLinkActive="nav-link-active">Clients</a>
+      <a class="nav-link" routerLink="/services" routerLinkActive="nav-link-active">Services</a>
+    </nav>
     @if (currentUser$ | async; as user) {
       <div class="user-info">
         <span class="user-name">{{ user.fullName }}</span>
@@ -30,5 +34,15 @@
         <p>Choose the client, service, date, notes, optional staff assignment, and save price at booking.</p>
       </a>
     </section>
+    <div class="quick-links">
+      <a class="quick-card" routerLink="/clients">
+        <span class="quick-card-title">Clients</span>
+        <span class="quick-card-desc">Manage your client directory</span>
+      </a>
+      <a class="quick-card" routerLink="/services">
+        <span class="quick-card-title">Services</span>
+        <span class="quick-card-desc">Manage your service catalogue</span>
+      </a>
+    </div>
   </main>
 </div>

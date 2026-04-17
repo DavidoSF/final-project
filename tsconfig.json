@@ -28,5 +28,16 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "out-tsc",
+    "src/**/*.spec.ts",
+    "src/test.ts"
+  ]
 }

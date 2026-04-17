@@ -1,0 +1,76 @@
+<div class="page-layout">
+  <header class="topbar">
+    <span class="brand">SME Service Manager</span>
+    <nav class="topbar-nav">
+      <button class="nav-link" (click)="onBack()">Dashboard</button>
+      <span class="nav-active">Services</span>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h2>Services</h2>
+      <button class="btn-primary" (click)="onAddNew()">+ Add Service</button>
+    </div>
+
+    @if (error$ | async; as errorMsg) {
+      <div class="alert-error" role="alert">{{ errorMsg }}</div>
+    }
+
+    @if (isLoading$ | async) {
+      <div class="loading-state">
+        <span class="spinner"></span>
+        Loading services…
+      </div>
+    }
+
+    @if (services$ | async; as services) {
+      @if (!( isLoading$ | async)) {
+        @if (services.length === 0) {
+          <div class="empty-state">
+            <p>No services found. <button class="link-btn" (click)="onAddNew()">Add your first service.</button></p>
+          </div>
+        } @else {
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Price</th>
+                  <th>Duration</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (service of services; track service.id) {
+                  <tr>
+                    <td class="td-name">{{ service.name }}</td>
+                    <td class="td-desc">{{ service.description }}</td>
+                    <td class="td-price">€{{ service.price | number:'1.2-2' }}</td>
+                    <td class="td-duration">{{ service.durationInMinutes }} min</td>
+                    <td>
+                      <span class="badge" [class.badge-active]="service.isActive" [class.badge-inactive]="!service.isActive">
+                        {{ service.isActive ? 'Active' : 'Inactive' }}
+                      </span>
+                    </td>
+                    <td class="td-actions">
+                      <button class="btn-icon btn-toggle"
+                        [title]="service.isActive ? 'Deactivate' : 'Activate'"
+                        (click)="onToggleActive(service)">
+                        {{ service.isActive ? 'Deactivate' : 'Activate' }}
+                      </button>
+                      <button class="btn-icon btn-edit" title="Edit" (click)="onEdit(service)">Edit</button>
+                      <button class="btn-icon btn-delete" title="Delete" (click)="onDelete(service)">Delete</button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+    }
+  </main>
+</div>
