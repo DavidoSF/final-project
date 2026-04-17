@@ -1,0 +1,80 @@
+<div class="page-shell">
+  <section class="status-card">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Status Update View</p>
+        <h1>Appointment status management</h1>
+      </div>
+      <a class="text-link" routerLink="/appointments">Back to list</a>
+    </div>
+
+    @if (appointment; as item) {
+      <div class="summary-grid">
+        <article>
+          <span>Client</span>
+          <strong>{{ item.clientName }}</strong>
+        </article>
+        <article>
+          <span>Service</span>
+          <strong>{{ item.serviceName }}</strong>
+        </article>
+        <article>
+          <span>Current status</span>
+          <strong>{{ item.status }}</strong>
+        </article>
+        <article>
+          <span>Scheduled date</span>
+          <strong>{{ item.scheduledDate | date: 'medium' }}</strong>
+        </article>
+      </div>
+
+      <form class="form-grid" [formGroup]="form" (ngSubmit)="onSave()">
+        <label>
+          <span>Assign staff</span>
+          <select formControlName="assignedStaffId">
+            <option value="">Leave unassigned</option>
+            @for (staff of staffMembers; track staff.id) {
+              <option [value]="staff.id">{{ staff.fullName }} ({{ staff.role }})</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          <span>Next status</span>
+          <select formControlName="status" [disabled]="!allowedStatuses.length">
+            <option value="">No change</option>
+            @for (status of allowedStatuses; track status) {
+              <option [value]="status">{{ status }}</option>
+            }
+          </select>
+        </label>
+
+        <div class="transition-panel">
+          <span>Allowed transitions</span>
+          @if (allowedStatuses.length) {
+            <strong>{{ allowedStatuses.join(' / ') }}</strong>
+          } @else {
+            <strong>Final state reached</strong>
+          }
+        </div>
+
+        @if (successMessage) {
+          <p class="success-message">{{ successMessage }}</p>
+        }
+
+        @if (errorMessage) {
+          <p class="error-message">{{ errorMessage }}</p>
+        }
+
+        <div class="form-actions">
+          <button class="btn btn-secondary" type="button" (click)="onBack()">Cancel</button>
+          <button class="btn btn-primary" type="submit">Save changes</button>
+        </div>
+      </form>
+    } @else if (errorMessage) {
+      <div class="message-state">
+        <p class="error-message">{{ errorMessage }}</p>
+      </div>
+    }
+  </section>
+</div>

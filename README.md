@@ -2,6 +2,31 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.8.
 
+## Appointment Frontend Work
+
+The frontend includes the appointment management module for Person 3.
+
+Implemented features:
+- Create Appointment page
+- Appointment List page
+- Status Update page
+- Filters by status, service, and client
+- Staff assignment from the appointment pages
+- Integration with the backend appointment API instead of mock local state
+
+Appointment pages:
+- `/appointments`
+- `/appointments/create`
+- `/appointments/:id/status`
+
+Connected backend endpoints:
+- `GET /api/appointments`
+- `GET /api/appointments/{id}`
+- `POST /api/appointments`
+- `PUT /api/appointments/{id}/status`
+- `PUT /api/appointments/{id}/assign-staff`
+- `GET /api/appointments/staff-members`
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.

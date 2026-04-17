@@ -1,0 +1,71 @@
+<div class="page-shell">
+  <section class="form-card">
+    <div class="form-copy">
+      <p class="eyebrow">Create Appointment</p>
+      <h1>Schedule a new service request</h1>
+      <p>
+        Capture the client, service, staff assignment, planned date, notes, and the service price at
+        booking time.
+      </p>
+      <a class="text-link" routerLink="/appointments">View all appointments</a>
+    </div>
+
+    <form class="form-grid" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <label>
+        <span>Client</span>
+        <select formControlName="clientId">
+          <option value="">Select a client</option>
+          @for (client of clients; track client.id) {
+            <option [value]="client.id">{{ client.fullName }} - {{ client.companyName }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        <span>Service</span>
+        <select formControlName="serviceId">
+          <option value="">Select a service</option>
+          @for (service of services; track service.id) {
+            <option [value]="service.id">{{ service.name }} - {{ service.price | currency }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        <span>Assign staff</span>
+        <select formControlName="assignedStaffId">
+          <option value="">Leave unassigned</option>
+          @for (staff of staffMembers; track staff.id) {
+            <option [value]="staff.id">{{ staff.fullName }} ({{ staff.role }})</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        <span>Scheduled date</span>
+        <input formControlName="scheduledDate" type="datetime-local" />
+      </label>
+
+      <label class="notes-field">
+        <span>Notes</span>
+        <textarea formControlName="notes" rows="5" placeholder="Additional appointment details"></textarea>
+      </label>
+
+      <div class="price-panel">
+        <span>Price at booking</span>
+        <strong>{{ selectedPrice | currency }}</strong>
+      </div>
+
+      @if (errorMessage) {
+        <p class="error-message">{{ errorMessage }}</p>
+      }
+
+      <div class="form-actions">
+        <a class="btn btn-secondary" routerLink="/appointments">Cancel</a>
+        <button class="btn btn-primary" type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Saving...' : 'Create appointment' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
