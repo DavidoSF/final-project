@@ -43,6 +43,8 @@ export const routes: Routes = [
       import('./features/appointments/appointment-status/appointment-status.component').then(
         (m) => m.AppointmentStatusComponent
       )
+  },
+  {
     path: 'clients',
     canActivate: [authGuard],
     loadComponent: () =>
