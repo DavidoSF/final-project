@@ -1,9 +1,12 @@
 <div class="dashboard-layout">
+
+  <!-- ── Topbar ────────────────────────────────────────────── -->
   <header class="topbar">
     <span class="brand">SME Service Manager</span>
     <nav class="topbar-nav">
       <a class="nav-link" routerLink="/clients" routerLinkActive="nav-link-active">Clients</a>
       <a class="nav-link" routerLink="/services" routerLinkActive="nav-link-active">Services</a>
+      <a class="nav-link" routerLink="/appointments" routerLinkActive="nav-link-active">Appointments</a>
     </nav>
     @if (currentUser$ | async; as user) {
       <div class="user-info">
@@ -14,35 +17,301 @@
     }
   </header>
 
+  <!-- ── Main content ─────────────────────────────────────── -->
   <main class="main-content">
-    <h2>Dashboard</h2>
-    @if (isAdmin$ | async) {
-      <p class="admin-notice">You have <strong>Admin</strong> access.</p>
-    }
-    <p>Welcome! Use the workspace below to manage clients, services, and appointments.</p>
 
-    <section class="quick-actions">
-      <a class="action-card primary" routerLink="/appointments">
-        <span class="card-label">Appointments</span>
-        <strong>Open appointment lifecycle</strong>
-        <p>Filter bookings, review status, and manage the workflow from pending to final state.</p>
-      </a>
-
-      <a class="action-card secondary" routerLink="/appointments/create">
-        <span class="card-label">New Booking</span>
-        <strong>Create an appointment</strong>
-        <p>Choose the client, service, date, notes, optional staff assignment, and save price at booking.</p>
-      </a>
-    </section>
-    <div class="quick-links">
-      <a class="quick-card" routerLink="/clients">
-        <span class="quick-card-title">Clients</span>
-        <span class="quick-card-desc">Manage your client directory</span>
-      </a>
-      <a class="quick-card" routerLink="/services">
-        <span class="quick-card-title">Services</span>
-        <span class="quick-card-desc">Manage your service catalogue</span>
-      </a>
+    <!-- Page heading -->
+    <div class="page-heading">
+      <div class="heading-left">
+        <h2>Dashboard</h2>
+        @if (isAdmin$ | async) {
+          <span class="admin-badge">Admin</span>
+        }
+      </div>
+      <a class="btn-primary" routerLink="/appointments/create">+ Create Appointment</a>
     </div>
+
+    <!-- Loading state -->
+    @if (isLoading) {
+      <div class="loading-state">
+        <span class="spinner"></span>
+        Loading dashboard…
+      </div>
+    }
+
+    @if (stats; as s) {
+
+      <!-- ── Stat cards ─────────────────────────────────── -->
+      <div class="stats-grid">
+
+        <div class="stat-card">
+          <div class="stat-icon-box blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="stat-body">
+            <span class="stat-label">Total Clients</span>
+            <strong class="stat-value">{{ s.totalClients }}</strong>
+          </div>
+          <a class="stat-link" routerLink="/clients">View</a>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-box indigo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <div class="stat-body">
+            <span class="stat-label">Total Services</span>
+            <strong class="stat-value">{{ s.totalServices }}</strong>
+          </div>
+          <a class="stat-link" routerLink="/services">View</a>
+        </div>
+
+        <div class="stat-card stat-card--warn">
+          <div class="stat-icon-box amber">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="stat-body">
+            <span class="stat-label">Pending</span>
+            <strong class="stat-value">{{ s.pending }}</strong>
+          </div>
+          <a class="stat-link" routerLink="/appointments">Review</a>
+        </div>
+
+        <div class="stat-card stat-card--success">
+          <div class="stat-icon-box green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="stat-body">
+            <span class="stat-label">Revenue (Completed)</span>
+            <strong class="stat-value">{{ s.totalRevenue | currency: 'EUR' : 'symbol' : '1.0-0' }}</strong>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Charts row ─────────────────────────────────── -->
+      <div class="charts-row">
+
+        <!-- Status distribution -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3 class="chart-title">Appointment Status</h3>
+            <span class="chart-total">{{ s.totalAppointments }} total</span>
+          </div>
+
+          @if (s.totalAppointments === 0) {
+            <p class="chart-empty">No appointments yet.</p>
+          } @else {
+            <!-- Stacked progress bar -->
+            <div class="stacked-bar" title="Status distribution">
+              @if (s.pending > 0) {
+                <div class="seg seg-pending" [style.flex]="s.pending" title="Pending: {{ s.pending }}"></div>
+              }
+              @if (s.approved > 0) {
+                <div class="seg seg-approved" [style.flex]="s.approved" title="Approved: {{ s.approved }}"></div>
+              }
+              @if (s.completed > 0) {
+                <div class="seg seg-completed" [style.flex]="s.completed" title="Completed: {{ s.completed }}"></div>
+              }
+              @if (s.cancelled > 0) {
+                <div class="seg seg-cancelled" [style.flex]="s.cancelled" title="Cancelled: {{ s.cancelled }}"></div>
+              }
+              @if (s.rejected > 0) {
+                <div class="seg seg-rejected" [style.flex]="s.rejected" title="Rejected: {{ s.rejected }}"></div>
+              }
+            </div>
+
+            <!-- Horizontal bars -->
+            <div class="status-bars">
+              <div class="status-bar-row">
+                <span class="sbar-label sbar-pending">Pending</span>
+                <div class="bar-track">
+                  <div class="bar-fill fill-pending" [style.width.%]="getStatusPercent(s.pending)"></div>
+                </div>
+                <span class="sbar-count">{{ s.pending }}</span>
+              </div>
+              <div class="status-bar-row">
+                <span class="sbar-label sbar-approved">Approved</span>
+                <div class="bar-track">
+                  <div class="bar-fill fill-approved" [style.width.%]="getStatusPercent(s.approved)"></div>
+                </div>
+                <span class="sbar-count">{{ s.approved }}</span>
+              </div>
+              <div class="status-bar-row">
+                <span class="sbar-label sbar-completed">Completed</span>
+                <div class="bar-track">
+                  <div class="bar-fill fill-completed" [style.width.%]="getStatusPercent(s.completed)"></div>
+                </div>
+                <span class="sbar-count">{{ s.completed }}</span>
+              </div>
+              <div class="status-bar-row">
+                <span class="sbar-label sbar-cancelled">Cancelled</span>
+                <div class="bar-track">
+                  <div class="bar-fill fill-cancelled" [style.width.%]="getStatusPercent(s.cancelled)"></div>
+                </div>
+                <span class="sbar-count">{{ s.cancelled }}</span>
+              </div>
+              <div class="status-bar-row">
+                <span class="sbar-label sbar-rejected">Rejected</span>
+                <div class="bar-track">
+                  <div class="bar-fill fill-rejected" [style.width.%]="getStatusPercent(s.rejected)"></div>
+                </div>
+                <span class="sbar-count">{{ s.rejected }}</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Top services by bookings -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3 class="chart-title">Top Services</h3>
+            <span class="chart-total">by bookings</span>
+          </div>
+
+          @if (topServices.length === 0) {
+            <p class="chart-empty">No booking data yet.</p>
+          } @else {
+            <div class="service-bars">
+              @for (svc of topServices; track svc.name) {
+                <div class="service-bar-row">
+                  <span class="svc-name">{{ svc.name }}</span>
+                  <div class="bar-track">
+                    <div class="bar-fill fill-service" [style.width.%]="svc.percent"></div>
+                  </div>
+                  <div class="svc-meta">
+                    <span class="svc-count">{{ svc.count }}</span>
+                    <span class="svc-revenue">{{ svc.revenue | currency: 'EUR' : 'symbol' : '1.0-0' }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+      </div>
+
+      <!-- ── Recent appointments ────────────────────────── -->
+      @if (recentAppointments.length > 0) {
+        <div class="recent-card">
+          <div class="recent-header">
+            <h3>Recent Appointments</h3>
+            <a class="text-link" routerLink="/appointments">View all →</a>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Service</th>
+                  <th>Scheduled</th>
+                  <th>Staff</th>
+                  <th>Status</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (appt of recentAppointments; track appt.id) {
+                  <tr>
+                    <td>{{ appt.clientName }}</td>
+                    <td>{{ appt.serviceName }}</td>
+                    <td>{{ appt.scheduledDate | date: 'dd MMM y' }}</td>
+                    <td>{{ appt.assignedStaffName || '—' }}</td>
+                    <td>
+                      <span class="status-chip" [ngClass]="getStatusClass(appt.status)">
+                        {{ appt.status }}
+                      </span>
+                    </td>
+                    <td>{{ appt.priceAtBooking | currency }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
+    }
+
+    <!-- ── Quick navigation cards ────────────────────── -->
+    <div class="nav-cards">
+
+      <a class="nav-card" routerLink="/appointments">
+        <div class="nav-icon-box blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <div class="nav-card-body">
+          <strong>Appointments</strong>
+          <span>Track bookings and manage lifecycle</span>
+        </div>
+        <span class="nav-arrow">›</span>
+      </a>
+
+      <a class="nav-card" routerLink="/appointments/create">
+        <div class="nav-icon-box green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="16"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+        </div>
+        <div class="nav-card-body">
+          <strong>New Booking</strong>
+          <span>Schedule a new appointment</span>
+        </div>
+        <span class="nav-arrow">›</span>
+      </a>
+
+      <a class="nav-card" routerLink="/clients">
+        <div class="nav-icon-box indigo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="nav-card-body">
+          <strong>Clients</strong>
+          <span>Manage your client directory</span>
+        </div>
+        <span class="nav-arrow">›</span>
+      </a>
+
+      <a class="nav-card" routerLink="/services">
+        <div class="nav-icon-box amber">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="nav-card-body">
+          <strong>Services</strong>
+          <span>Manage your service catalogue</span>
+        </div>
+        <span class="nav-arrow">›</span>
+      </a>
+
+    </div>
+
   </main>
 </div>

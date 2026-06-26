@@ -1,80 +1,80 @@
-<div class="page-shell">
-  <section class="status-card">
-    <div class="header-row">
-      <div>
-        <p class="eyebrow">Status Update View</p>
-        <h1>Appointment status management</h1>
-      </div>
-      <a class="text-link" routerLink="/appointments">Back to list</a>
-    </div>
+<div class="page-layout">
+  <header class="topbar">
+    <span class="brand">SME Service Manager</span>
+    <nav class="topbar-nav">
+      <button class="nav-link" type="button" (click)="onBack()">← Appointments</button>
+    </nav>
+  </header>
 
+  <main class="main-content">
     @if (appointment; as item) {
-      <div class="summary-grid">
-        <article>
-          <span>Client</span>
-          <strong>{{ item.clientName }}</strong>
-        </article>
-        <article>
-          <span>Service</span>
-          <strong>{{ item.serviceName }}</strong>
-        </article>
-        <article>
-          <span>Current status</span>
-          <strong>{{ item.status }}</strong>
-        </article>
-        <article>
-          <span>Scheduled date</span>
-          <strong>{{ item.scheduledDate | date: 'medium' }}</strong>
-        </article>
-      </div>
+      <div class="form-card">
+        <h2>Update Appointment Status</h2>
 
-      <form class="form-grid" [formGroup]="form" (ngSubmit)="onSave()">
-        <label>
-          <span>Assign staff</span>
-          <select formControlName="assignedStaffId">
-            <option value="">Leave unassigned</option>
-            @for (staff of staffMembers; track staff.id) {
-              <option [value]="staff.id">{{ staff.fullName }} ({{ staff.role }})</option>
-            }
-          </select>
-        </label>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span>Client</span>
+            <strong>{{ item.clientName }}</strong>
+          </div>
+          <div class="summary-item">
+            <span>Service</span>
+            <strong>{{ item.serviceName }}</strong>
+          </div>
+          <div class="summary-item">
+            <span>Current status</span>
+            <strong>{{ item.status }}</strong>
+          </div>
+          <div class="summary-item">
+            <span>Scheduled date</span>
+            <strong>{{ item.scheduledDate | date: 'medium' }}</strong>
+          </div>
+        </div>
 
-        <label>
-          <span>Next status</span>
-          <select formControlName="status" [disabled]="!allowedStatuses.length">
-            <option value="">No change</option>
-            @for (status of allowedStatuses; track status) {
-              <option [value]="status">{{ status }}</option>
-            }
-          </select>
-        </label>
+        <form [formGroup]="form" (ngSubmit)="onSave()" novalidate>
 
-        <div class="transition-panel">
-          <span>Allowed transitions</span>
-          @if (allowedStatuses.length) {
-            <strong>{{ allowedStatuses.join(' / ') }}</strong>
-          } @else {
-            <strong>Final state reached</strong>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="assignedStaffId">Assign staff</label>
+              <select id="assignedStaffId" formControlName="assignedStaffId">
+                <option value="">Leave unassigned</option>
+                @for (staff of staffMembers; track staff.id) {
+                  <option [value]="staff.id">{{ staff.fullName }} ({{ staff.role }})</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="status">Next status</label>
+              <select id="status" formControlName="status" [disabled]="!allowedStatuses.length">
+                <option value="">No change</option>
+                @for (status of allowedStatuses; track status) {
+                  <option [value]="status">{{ status }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          @if (!allowedStatuses.length) {
+            <p class="muted-note">This appointment has reached a final state — no further transitions available.</p>
           }
-        </div>
 
-        @if (successMessage) {
-          <p class="success-message">{{ successMessage }}</p>
-        }
+          @if (successMessage) {
+            <p class="success-message">{{ successMessage }}</p>
+          }
 
-        @if (errorMessage) {
-          <p class="error-message">{{ errorMessage }}</p>
-        }
+          @if (errorMessage) {
+            <div class="alert-error" role="alert">{{ errorMessage }}</div>
+          }
 
-        <div class="form-actions">
-          <button class="btn btn-secondary" type="button" (click)="onBack()">Cancel</button>
-          <button class="btn btn-primary" type="submit">Save changes</button>
-        </div>
-      </form>
-    } @else if (errorMessage) {
-      <div class="message-state">
-        <p class="error-message">{{ errorMessage }}</p>
+          <div class="form-actions">
+            <button class="btn-secondary" type="button" (click)="onBack()">Cancel</button>
+            <button class="btn-primary" type="submit">Save changes</button>
+          </div>
+
+        </form>
       </div>
+    } @else if (errorMessage) {
+      <div class="alert-error" role="alert">{{ errorMessage }}</div>
     }
-  </section>
+  </main>
 </div>

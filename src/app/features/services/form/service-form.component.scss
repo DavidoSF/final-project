@@ -8,11 +8,11 @@
 .topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   background: #2d3748;
   color: #fff;
   padding: 0 1.5rem;
   height: 56px;
+  gap: 1rem;
 }
 
 .brand {
@@ -23,15 +23,18 @@
 .topbar-nav {
   display: flex;
   align-items: center;
+  flex: 1;
+  margin-left: 1.5rem;
 }
 
 .nav-link {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
   cursor: pointer;
   padding: 0.25rem 0;
+  transition: color 0.2s;
 
   &:hover {
     color: #fff;
@@ -48,7 +51,7 @@
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  padding: 2rem 2rem;
+  padding: 2rem;
   width: 100%;
   max-width: 560px;
 
@@ -77,9 +80,9 @@
     border: 1px solid #cbd5e0;
     border-radius: 6px;
     font-size: 0.95rem;
+    font-family: inherit;
     outline: none;
     transition: border-color 0.2s;
-    font-family: inherit;
 
     &:focus {
       border-color: #4299e1;
@@ -135,7 +138,7 @@
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   transition: background 0.2s;
@@ -178,4 +181,10 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+@media (max-width: 720px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }
