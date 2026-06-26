@@ -70,18 +70,36 @@ export const routes: Routes = [
   },
   {
     path: 'services/new',
-    canActivate: [authGuard],
+    canActivate: [authGuard, adminGuard],
     loadComponent: () =>
       import('./features/services/form/service-form.component').then((m) => m.ServiceFormComponent)
   },
   {
     path: 'services/:id/edit',
-    canActivate: [authGuard],
+    canActivate: [authGuard, adminGuard],
     loadComponent: () =>
       import('./features/services/form/service-form.component').then((m) => m.ServiceFormComponent)
   },
   {
+    path: 'activity-logs',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () =>
+      import('./features/activity-logs/activity-logs.component').then((m) => m.ActivityLogsComponent)
+  },
+  {
+    path: 'users',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () =>
+      import('./features/users/users.component').then((m) => m.UsersComponent)
+  },
+  {
+    path: '404',
+    loadComponent: () =>
+      import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent)
+  },
+  {
     path: '**',
-    redirectTo: 'dashboard'
+    loadComponent: () =>
+      import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent)
   }
 ];

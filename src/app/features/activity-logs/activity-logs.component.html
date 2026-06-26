@@ -1,0 +1,86 @@
+<div class="page-layout">
+
+  <header class="topbar">
+    <span class="brand">SME Service Manager</span>
+    <nav class="topbar-nav">
+      <a class="nav-link" routerLink="/dashboard">Dashboard</a>
+      <span class="nav-active">Activity Logs</span>
+    </nav>
+    @if (currentUser$ | async; as user) {
+      <div class="user-info">
+        <span class="user-name">{{ user.fullName }}</span>
+        <span class="user-role admin">Admin</span>
+        <button class="btn-logout" (click)="onLogout()">Sign out</button>
+      </div>
+    }
+  </header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h2>Activity Logs</h2>
+      <span class="badge-count">{{ filtered.length }} entries</span>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar">
+      <div class="filter-group">
+        <label for="search">Search</label>
+        <input
+          id="search"
+          type="text"
+          class="filter-input"
+          placeholder="Description, user, action…"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="applyFilter()"
+        />
+      </div>
+      <div class="filter-group">
+        <label for="actionType">Action type</label>
+        <select id="actionType" class="filter-select" [(ngModel)]="selectedActionType" (ngModelChange)="applyFilter()">
+          <option value="">All types</option>
+          @for (type of actionTypes; track type) {
+            <option [value]="type">{{ type }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    @if (error) {
+      <div class="alert-error">{{ error }}</div>
+    }
+
+    @if (isLoading) {
+      <div class="loading-state">
+        <span class="spinner"></span>
+        Loading logs…
+      </div>
+    } @else if (filtered.length === 0) {
+      <div class="empty-state">
+        <p>No activity logs found.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Action</th>
+              <th>Description</th>
+              <th>Performed by</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (log of filtered; track log.id) {
+              <tr>
+                <td class="td-time">{{ log.timestamp | date: 'dd MMM y, HH:mm' }}</td>
+                <td><span class="action-chip">{{ log.actionType }}</span></td>
+                <td class="td-desc">{{ log.description }}</td>
+                <td>{{ log.performedByUserName }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </main>
+</div>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -16,21 +17,23 @@ import { ClientModel } from '../../../core/models';
 @Component({
   selector: 'app-client-list',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './client-list.component.html',
   styleUrl: './client-list.component.scss'
 })
 export class ClientListComponent implements OnInit {
-  clients$: Observable<ClientModel[]>;
   isLoading$: Observable<boolean>;
   error$: Observable<string | null>;
   isAdmin$: Observable<boolean>;
+
+  allClients: ClientModel[] = [];
+  filtered: ClientModel[] = [];
+  searchQuery = '';
 
   constructor(
     private store: Store<AppState>,
     private router: Router
   ) {
-    this.clients$ = this.store.select(selectAllClients);
     this.isLoading$ = this.store.select(selectClientLoading);
     this.error$ = this.store.select(selectClientError);
     this.isAdmin$ = this.store.select(selectIsAdmin);
@@ -38,6 +41,24 @@ export class ClientListComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(loadClients());
+    this.store.select(selectAllClients).subscribe((clients) => {
+      this.allClients = clients;
+      this.applyFilter();
+    });
+  }
+
+  applyFilter(): void {
+    const q = this.searchQuery.trim().toLowerCase();
+    if (!q) {
+      this.filtered = this.allClients;
+      return;
+    }
+    this.filtered = this.allClients.filter(
+      (c) =>
+        c.fullName.toLowerCase().includes(q) ||
+        c.email.toLowerCase().includes(q) ||
+        (c.companyName ?? '').toLowerCase().includes(q)
+    );
   }
 
   onAddNew(): void {
@@ -52,4 +73,3 @@ export class ClientListComponent implements OnInit {
     this.router.navigate(['/dashboard']);
   }
 }
-

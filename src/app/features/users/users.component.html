@@ -1,0 +1,167 @@
+<div class="page-layout">
+
+  <header class="topbar">
+    <span class="brand">SME Service Manager</span>
+    <nav class="topbar-nav">
+      <a class="nav-link" routerLink="/dashboard">Dashboard</a>
+      <span class="nav-active">Users</span>
+    </nav>
+    @if (currentUser$ | async; as user) {
+      <div class="user-info">
+        <span class="user-name">{{ user.fullName }}</span>
+        <span class="user-role admin">Admin</span>
+        <button class="btn-logout" (click)="onLogout()">Sign out</button>
+      </div>
+    }
+  </header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h2>User Management</h2>
+      <button class="btn-primary" (click)="openCreateModal()">+ New User</button>
+    </div>
+
+    @if (successMsg) {
+      <div class="alert-success">{{ successMsg }}</div>
+    }
+
+    @if (error) {
+      <div class="alert-error">{{ error }}</div>
+    }
+
+    <!-- Filters -->
+    <div class="filters-bar">
+      <div class="filter-group">
+        <label for="search">Search</label>
+        <input
+          id="search"
+          type="text"
+          class="filter-input"
+          placeholder="Name or email…"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="applyFilter()"
+        />
+      </div>
+      <div class="filter-group">
+        <label for="role">Role</label>
+        <select id="role" class="filter-select" [(ngModel)]="selectedRole" (ngModelChange)="applyFilter()">
+          <option value="">All roles</option>
+          <option value="Admin">Admin</option>
+          <option value="Staff">Staff</option>
+        </select>
+      </div>
+    </div>
+
+    @if (isLoading) {
+      <div class="loading-state">
+        <span class="spinner"></span>
+        Loading users…
+      </div>
+    } @else if (filtered.length === 0) {
+      <div class="empty-state"><p>No users found.</p></div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of filtered; track user.id) {
+              <tr>
+                <td class="td-name">{{ user.fullName }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                  <span class="role-chip" [class.admin]="user.role === 'Admin'">{{ user.role }}</span>
+                </td>
+                <td>
+                  <span class="status-chip" [class.active]="user.isActive">
+                    {{ user.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="td-date">{{ user.createdAt | date: 'dd MMM y' }}</td>
+                <td class="td-actions">
+                  <button
+                    class="btn-icon"
+                    [class.btn-deactivate]="user.isActive"
+                    [class.btn-activate]="!user.isActive"
+                    (click)="onToggleActive(user)"
+                  >
+                    {{ user.isActive ? 'Deactivate' : 'Activate' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </main>
+</div>
+
+<!-- Create user modal -->
+@if (showCreateModal) {
+  <div class="modal-overlay" (click)="closeCreateModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Create New User</h3>
+        <button class="modal-close" (click)="closeCreateModal()">✕</button>
+      </div>
+
+      @if (createError) {
+        <div class="alert-error">{{ createError }}</div>
+      }
+
+      <form [formGroup]="createForm" (ngSubmit)="onCreateSubmit()" novalidate>
+        <div class="form-group">
+          <label for="fullName">Full name</label>
+          <input id="fullName" type="text" formControlName="fullName"
+            [class.is-invalid]="createForm.get('fullName')?.invalid && createForm.get('fullName')?.touched" />
+          @if (createForm.get('fullName')?.invalid && createForm.get('fullName')?.touched) {
+            <span class="error-msg">Full name is required.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" type="email" formControlName="email"
+            [class.is-invalid]="createForm.get('email')?.invalid && createForm.get('email')?.touched" />
+          @if (createForm.get('email')?.invalid && createForm.get('email')?.touched) {
+            <span class="error-msg">A valid email is required.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" type="password" formControlName="password"
+            [class.is-invalid]="createForm.get('password')?.invalid && createForm.get('password')?.touched" />
+          @if (createForm.get('password')?.invalid && createForm.get('password')?.touched) {
+            <span class="error-msg">Password must be at least 8 characters.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="newRole">Role</label>
+          <select id="newRole" formControlName="role">
+            <option value="Staff">Staff</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="closeCreateModal()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="isCreating">
+            @if (isCreating) { <span class="spinner-sm"></span> Creating… }
+            @else { Create User }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

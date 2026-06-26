@@ -13,6 +13,29 @@
       <button class="btn-primary" (click)="onAddNew()">+ Add Service</button>
     </div>
 
+    <!-- Filters -->
+    <div class="filters-bar">
+      <div class="filter-group">
+        <label for="search">Search</label>
+        <input
+          id="search"
+          type="text"
+          class="filter-input"
+          placeholder="Service name…"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="applyFilter()"
+        />
+      </div>
+      <div class="filter-group">
+        <label for="statusFilter">Status</label>
+        <select id="statusFilter" class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="applyFilter()">
+          <option value="all">All statuses</option>
+          <option value="active">Active only</option>
+          <option value="inactive">Inactive only</option>
+        </select>
+      </div>
+    </div>
+
     @if (error$ | async; as errorMsg) {
       <div class="alert-error" role="alert">{{ errorMsg }}</div>
     }
@@ -22,55 +45,53 @@
         <span class="spinner"></span>
         Loading services…
       </div>
-    }
-
-    @if (services$ | async; as services) {
-      @if (!( isLoading$ | async)) {
-        @if (services.length === 0) {
-          <div class="empty-state">
-            <p>No services found. <button class="link-btn" (click)="onAddNew()">Add your first service.</button></p>
-          </div>
+    } @else if (filtered.length === 0) {
+      <div class="empty-state">
+        @if (searchQuery || statusFilter !== 'all') {
+          <p>No services match your filters.</p>
         } @else {
-          <div class="table-wrapper">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Description</th>
-                  <th>Price</th>
-                  <th>Duration</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (service of services; track service.id) {
-                  <tr>
-                    <td class="td-name">{{ service.name }}</td>
-                    <td class="td-desc">{{ service.description }}</td>
-                    <td class="td-price">€{{ service.price | number:'1.2-2' }}</td>
-                    <td class="td-duration">{{ service.durationInMinutes }} min</td>
-                    <td>
-                      <span class="badge" [class.badge-active]="service.isActive" [class.badge-inactive]="!service.isActive">
-                        {{ service.isActive ? 'Active' : 'Inactive' }}
-                      </span>
-                    </td>
-                    <td class="td-actions">
-                      <button class="btn-icon btn-toggle"
-                        [title]="service.isActive ? 'Deactivate' : 'Activate'"
-                        (click)="onToggleActive(service)">
-                        {{ service.isActive ? 'Deactivate' : 'Activate' }}
-                      </button>
-                      <button class="btn-icon btn-edit" title="Edit" (click)="onEdit(service)">Edit</button>
-                      <button class="btn-icon btn-delete" title="Delete" (click)="onDelete(service)">Delete</button>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+          <p>No services found. <button class="link-btn" (click)="onAddNew()">Add your first service.</button></p>
         }
-      }
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Price</th>
+              <th>Duration</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (service of filtered; track service.id) {
+              <tr>
+                <td class="td-name">{{ service.name }}</td>
+                <td class="td-desc">{{ service.description }}</td>
+                <td class="td-price">€{{ service.price | number:'1.2-2' }}</td>
+                <td class="td-duration">{{ service.durationInMinutes }} min</td>
+                <td>
+                  <span class="badge" [class.badge-active]="service.isActive" [class.badge-inactive]="!service.isActive">
+                    {{ service.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="td-actions">
+                  <button class="btn-icon btn-toggle"
+                    [title]="service.isActive ? 'Deactivate' : 'Activate'"
+                    (click)="onToggleActive(service)">
+                    {{ service.isActive ? 'Deactivate' : 'Activate' }}
+                  </button>
+                  <button class="btn-icon btn-edit" title="Edit" (click)="onEdit(service)">Edit</button>
+                  <button class="btn-icon btn-delete" title="Delete" (click)="onDelete(service)">Delete</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     }
   </main>
 </div>
