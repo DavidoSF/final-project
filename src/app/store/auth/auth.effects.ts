@@ -11,7 +11,10 @@ export const loginEffect$ = createEffect(
       ofType(AuthActions.login),
       exhaustMap(({ email, password }) =>
         authService.login({ email, password }).pipe(
-          map((response) => AuthActions.loginSuccess({ token: response.token, user: response.user })),
+          map((response) => {
+            authService.saveSession(response);
+            return AuthActions.loginSuccess({ token: response.token, user: response.user });
+          }),
           catchError((err) => {
             const message: string =
               err?.error?.message ?? 'Login failed. Please check your credentials.';
@@ -27,8 +30,7 @@ export const loginSuccessEffect$ = createEffect(
   (actions$ = inject(Actions), authService = inject(AuthService), router = inject(Router)) =>
     actions$.pipe(
       ofType(AuthActions.loginSuccess),
-      tap(({ token, user }) => {
-        authService.saveSession({ token, user });
+      tap(() => {
         router.navigate(['/dashboard']);
       })
     ),

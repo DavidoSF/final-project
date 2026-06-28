@@ -32,7 +32,10 @@
           <span class="admin-badge">Admin</span>
         }
       </div>
-      <a class="btn-primary" routerLink="/appointments/create">+ Create Appointment</a>
+      <div class="heading-actions">
+        <a class="btn-secondary" [href]="csvUrl">↓ Export CSV</a>
+        <a class="btn-primary" routerLink="/appointments/create">+ Create Appointment</a>
+      </div>
     </div>
 
     <!-- Loading state -->
@@ -121,7 +124,6 @@
           @if (s.totalAppointments === 0) {
             <p class="chart-empty">No appointments yet.</p>
           } @else {
-            <!-- Stacked progress bar -->
             <div class="stacked-bar" title="Status distribution">
               @if (s.pending > 0) {
                 <div class="seg seg-pending" [style.flex]="s.pending" title="Pending: {{ s.pending }}"></div>
@@ -140,41 +142,30 @@
               }
             </div>
 
-            <!-- Horizontal bars -->
             <div class="status-bars">
               <div class="status-bar-row">
                 <span class="sbar-label sbar-pending">Pending</span>
-                <div class="bar-track">
-                  <div class="bar-fill fill-pending" [style.width.%]="getStatusPercent(s.pending)"></div>
-                </div>
+                <div class="bar-track"><div class="bar-fill fill-pending" [style.width.%]="getStatusPercent(s.pending)"></div></div>
                 <span class="sbar-count">{{ s.pending }}</span>
               </div>
               <div class="status-bar-row">
                 <span class="sbar-label sbar-approved">Approved</span>
-                <div class="bar-track">
-                  <div class="bar-fill fill-approved" [style.width.%]="getStatusPercent(s.approved)"></div>
-                </div>
+                <div class="bar-track"><div class="bar-fill fill-approved" [style.width.%]="getStatusPercent(s.approved)"></div></div>
                 <span class="sbar-count">{{ s.approved }}</span>
               </div>
               <div class="status-bar-row">
                 <span class="sbar-label sbar-completed">Completed</span>
-                <div class="bar-track">
-                  <div class="bar-fill fill-completed" [style.width.%]="getStatusPercent(s.completed)"></div>
-                </div>
+                <div class="bar-track"><div class="bar-fill fill-completed" [style.width.%]="getStatusPercent(s.completed)"></div></div>
                 <span class="sbar-count">{{ s.completed }}</span>
               </div>
               <div class="status-bar-row">
                 <span class="sbar-label sbar-cancelled">Cancelled</span>
-                <div class="bar-track">
-                  <div class="bar-fill fill-cancelled" [style.width.%]="getStatusPercent(s.cancelled)"></div>
-                </div>
+                <div class="bar-track"><div class="bar-fill fill-cancelled" [style.width.%]="getStatusPercent(s.cancelled)"></div></div>
                 <span class="sbar-count">{{ s.cancelled }}</span>
               </div>
               <div class="status-bar-row">
                 <span class="sbar-label sbar-rejected">Rejected</span>
-                <div class="bar-track">
-                  <div class="bar-fill fill-rejected" [style.width.%]="getStatusPercent(s.rejected)"></div>
-                </div>
+                <div class="bar-track"><div class="bar-fill fill-rejected" [style.width.%]="getStatusPercent(s.rejected)"></div></div>
                 <span class="sbar-count">{{ s.rejected }}</span>
               </div>
             </div>
@@ -209,6 +200,28 @@
         </div>
 
       </div>
+
+      <!-- ── Monthly revenue trend ──────────────────────── -->
+      @if (monthlyRevenue.length > 0) {
+        <div class="chart-card chart-card--wide" style="margin-bottom:1.5rem;">
+          <div class="chart-header">
+            <h3 class="chart-title">Monthly Revenue Trend</h3>
+            <span class="chart-total">last 6 months</span>
+          </div>
+          <div class="monthly-chart">
+            @for (m of monthlyRevenue; track m.monthLabel) {
+              <div class="month-col">
+                <span class="month-value">{{ m.revenue | currency: 'EUR' : 'symbol' : '1.0-0' }}</span>
+                <div class="month-bar-wrap">
+                  <div class="month-bar" [style.height.%]="getMonthlyRevenuePercent(m.revenue)"></div>
+                </div>
+                <span class="month-label">{{ m.monthLabel }}</span>
+                <span class="month-appts">{{ m.totalAppointments }} appts</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
 
       <!-- ── Recent appointments ────────────────────────── -->
       @if (recentAppointments.length > 0) {

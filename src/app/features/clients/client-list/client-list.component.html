@@ -66,10 +66,9 @@
                 <td>{{ client.phoneNumber }}</td>
                 <td>{{ client.companyName }}</td>
                 <td class="td-actions">
+                  <a class="btn-icon btn-view" [routerLink]="['/clients', client.id]" title="View history">View</a>
                   @if (isAdmin$ | async) {
                     <button class="btn-icon btn-edit" title="Edit" (click)="onEdit(client)">Edit</button>
-                  } @else {
-                    <span class="muted">—</span>
                   }
                 </td>
               </tr>

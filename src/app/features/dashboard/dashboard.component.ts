@@ -10,6 +10,8 @@ import { UserModel, AppointmentModel } from '../../core/models';
 import { AppointmentService } from '../../core/services/appointment.service';
 import { ClientService } from '../../core/services/client.service';
 import { ServiceService } from '../../core/services/service.service';
+import { DashboardService, MonthlyRevenue } from '../../core/services/dashboard.service';
+import { environment } from '../../core/environments/environment';
 
 export interface DashboardStats {
   totalClients: number;
@@ -44,13 +46,17 @@ export class DashboardComponent implements OnInit {
   stats: DashboardStats | null = null;
   recentAppointments: AppointmentModel[] = [];
   topServices: TopService[] = [];
+  monthlyRevenue: MonthlyRevenue[] = [];
   isLoading = true;
+
+  readonly csvUrl = `${environment.apiUrl}/report/appointments.csv`;
 
   constructor(
     private readonly store: Store<AppState>,
     private readonly appointmentService: AppointmentService,
     private readonly clientService: ClientService,
-    private readonly serviceService: ServiceService
+    private readonly serviceService: ServiceService,
+    private readonly dashboardService: DashboardService
   ) {
     this.currentUser$ = this.store.select(selectCurrentUser);
     this.isAdmin$ = this.store.select(selectIsAdmin);
@@ -60,13 +66,15 @@ export class DashboardComponent implements OnInit {
     forkJoin({
       appointments: this.appointmentService.getAppointments().pipe(catchError(() => of([]))),
       clients: this.clientService.getAll().pipe(catchError(() => of([]))),
-      services: this.serviceService.getAll().pipe(catchError(() => of([])))
-    }).subscribe(({ appointments, clients, services }) => {
+      services: this.serviceService.getAll().pipe(catchError(() => of([]))),
+      analytics: this.dashboardService.getAnalytics().pipe(catchError(() => of(null)))
+    }).subscribe(({ appointments, clients, services, analytics }) => {
       this.computeStats(appointments, clients.length, services.length);
       this.recentAppointments = [...appointments]
         .sort((a, b) => new Date(b.scheduledDate).getTime() - new Date(a.scheduledDate).getTime())
         .slice(0, 6);
       this.computeTopServices(appointments);
+      if (analytics) this.monthlyRevenue = analytics.monthlyRevenue;
       this.isLoading = false;
     });
   }
@@ -117,6 +125,11 @@ export class DashboardComponent implements OnInit {
   getStatusPercent(count: number): number {
     if (!this.stats?.totalAppointments) return 0;
     return Math.round((count / this.stats.totalAppointments) * 100);
+  }
+
+  getMonthlyRevenuePercent(revenue: number): number {
+    const max = Math.max(...this.monthlyRevenue.map(m => m.revenue), 1);
+    return Math.round((revenue / max) * 100);
   }
 
   getStatusClass(status: string): string {

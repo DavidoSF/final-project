@@ -119,6 +119,13 @@
   border: 1px solid #bee3f8;
 }
 
+.heading-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .btn-primary {
   padding: 0.6rem 1.25rem;
   background: #3182ce;
@@ -132,6 +139,21 @@
   transition: background 0.2s;
 
   &:hover { background: #2b6cb0; }
+}
+
+.btn-secondary {
+  padding: 0.6rem 1.25rem;
+  background: #edf2f7;
+  color: #4a5568;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover { background: #e2e8f0; }
 }
 
 // ── Loading ───────────────────────────────────────────────────
@@ -484,6 +506,64 @@
   &.rejected  { background: #fee2e2; color: #991b1b; }
 }
 
+// ── Monthly revenue chart ─────────────────────────────────────
+.chart-card--wide { grid-column: 1 / -1; }
+
+.monthly-chart {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  height: 140px;
+  padding-top: 1.5rem;
+}
+
+.month-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  height: 100%;
+}
+
+.month-bar-wrap {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 4px;
+}
+
+.month-bar {
+  width: 60%;
+  max-width: 36px;
+  background: #3182ce;
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: height 0.4s ease;
+}
+
+.month-value {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #3182ce;
+  white-space: nowrap;
+}
+
+.month-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #4a5568;
+  white-space: nowrap;
+}
+
+.month-appts {
+  font-size: 0.65rem;
+  color: #a0aec0;
+  white-space: nowrap;
+}
+
 // ── Quick nav cards ───────────────────────────────────────────
 .nav-cards {
   display: grid;
@@ -570,6 +650,14 @@
 
 @media (max-width: 780px) {
   .charts-row { grid-template-columns: 1fr; }
+  .topbar-nav { display: none; }
+
+  .main-content { padding: 1.25rem 1rem; }
+
+  .data-table {
+    font-size: 0.8rem;
+    thead th, tbody td { padding: 0.5rem 0.6rem; }
+  }
 }
 
 @media (max-width: 560px) {
@@ -580,5 +668,21 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
+  }
+
+  .heading-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+
+    a { text-align: center; }
+  }
+
+  .monthly-chart { height: 100px; }
+  .month-value, .month-appts { display: none; }
+
+  .topbar {
+    padding: 0 1rem;
+    .brand { font-size: 0.95rem; }
   }
 }

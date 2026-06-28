@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
 import { AppointmentModel, AppointmentStatus, ClientModel, ServiceModel } from '../../../core/models';
 import { AppointmentService } from '../../../core/services/appointment.service';
+import { environment } from '../../../core/environments/environment';
 
 @Component({
   selector: 'app-appointments-list',
@@ -15,6 +16,8 @@ import { AppointmentService } from '../../../core/services/appointment.service';
   styleUrl: './appointments-list.component.scss'
 })
 export class AppointmentsListComponent implements OnInit {
+  readonly csvUrl = `${environment.apiUrl}/report/appointments.csv`;
+
   readonly statuses: Array<AppointmentStatus | ''> = [
     '',
     'Pending',
