@@ -149,11 +149,24 @@
   border-radius: 6px;
   font-size: 0.9rem;
   font-weight: 600;
+  font-family: inherit;
   text-decoration: none;
   cursor: pointer;
   transition: background 0.2s;
 
-  &:hover { background: #e2e8f0; }
+  &:hover:not(:disabled) { background: #e2e8f0; }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.export-error {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  color: #c53030;
+  text-align: right;
 }
 
 // ── Loading ───────────────────────────────────────────────────
@@ -675,7 +688,7 @@
     flex-direction: column;
     align-items: stretch;
 
-    a { text-align: center; }
+    a, button { text-align: center; }
   }
 
   .monthly-chart { height: 100px; }

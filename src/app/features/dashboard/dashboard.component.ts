@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, forkJoin, catchError, of } from 'rxjs';
@@ -11,7 +12,7 @@ import { AppointmentService } from '../../core/services/appointment.service';
 import { ClientService } from '../../core/services/client.service';
 import { ServiceService } from '../../core/services/service.service';
 import { DashboardService, MonthlyRevenue } from '../../core/services/dashboard.service';
-import { environment } from '../../core/environments/environment';
+import { ReportService } from '../../core/services/report.service';
 
 export interface DashboardStats {
   totalClients: number;
@@ -49,14 +50,16 @@ export class DashboardComponent implements OnInit {
   monthlyRevenue: MonthlyRevenue[] = [];
   isLoading = true;
 
-  readonly csvUrl = `${environment.apiUrl}/report/appointments.csv`;
+  isExporting = false;
+  exportError: string | null = null;
 
   constructor(
     private readonly store: Store<AppState>,
     private readonly appointmentService: AppointmentService,
     private readonly clientService: ClientService,
     private readonly serviceService: ServiceService,
-    private readonly dashboardService: DashboardService
+    private readonly dashboardService: DashboardService,
+    private readonly reportService: ReportService
   ) {
     this.currentUser$ = this.store.select(selectCurrentUser);
     this.isAdmin$ = this.store.select(selectIsAdmin);
@@ -138,5 +141,42 @@ export class DashboardComponent implements OnInit {
 
   onLogout(): void {
     this.store.dispatch(logout());
+  }
+
+  exportCsv(): void {
+    if (this.isExporting) {
+      return;
+    }
+
+    this.isExporting = true;
+    this.exportError = null;
+
+    this.reportService.exportAppointmentsCsv().subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+
+        link.href = url;
+        link.download = `appointments-${new Date().toISOString().slice(0, 10)}.csv`;
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+
+        this.isExporting = false;
+      },
+      error: (error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          this.exportError = 'Your session has expired. Please log in again to export.';
+        } else if (error.status === 403) {
+          this.exportError = 'You do not have permission to export appointments.';
+        } else {
+          this.exportError = 'Failed to export appointments. Please try again.';
+        }
+
+        this.isExporting = false;
+      }
+    });
   }
 }

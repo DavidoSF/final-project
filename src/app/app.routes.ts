@@ -51,12 +51,6 @@ export const routes: Routes = [
       import('./features/clients/client-list/client-list.component').then((m) => m.ClientListComponent)
   },
   {
-    path: 'clients/:id',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/clients/client-detail/client-detail.component').then((m) => m.ClientDetailComponent)
-  },
-  {
     path: 'clients/new',
     canActivate: [authGuard, adminGuard],
     loadComponent: () =>
@@ -67,6 +61,12 @@ export const routes: Routes = [
     canActivate: [authGuard, adminGuard],
     loadComponent: () =>
       import('./features/clients/client-form/client-form.component').then((m) => m.ClientFormComponent)
+  },
+  {
+    path: 'clients/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/clients/client-detail/client-detail.component').then((m) => m.ClientDetailComponent)
   },
   {
     path: 'services',

@@ -11,7 +11,19 @@
   <main class="main-content">
     <div class="page-header">
       <h2>Appointments</h2>
-      <a class="btn-export" [href]="csvUrl">↓ Export CSV</a>
+      <div class="export-wrap">
+        <button
+          type="button"
+          class="btn-export"
+          [disabled]="isExporting"
+          (click)="exportCsv()"
+        >
+          {{ isExporting ? 'Exporting…' : '↓ Export CSV' }}
+        </button>
+        @if (exportError) {
+          <p class="export-error">{{ exportError }}</p>
+        }
+      </div>
     </div>
 
     <div class="filters-card">

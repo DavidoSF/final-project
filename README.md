@@ -27,6 +27,16 @@ Connected backend endpoints:
 - `PUT /api/appointments/{id}/assign-staff`
 - `GET /api/appointments/staff-members`
 
+## Activity Logs
+
+`/activity-logs` (Admin only) lists recent activity via `ActivityLogService`, reading `GET /api/activitylog`. Entries are now populated by the backend on every successful create/update/delete/login/export action — see the backend README for the full list of logged actions.
+
+## CSV Export
+
+Appointments can be exported as CSV from two places: the Appointments page (respects the active status/service/client filters) and the Dashboard page (always exports all appointments). Both use `ReportService.exportAppointmentsCsv()`, which calls `GET /api/report/appointments.csv` through `HttpClient` with `responseType: 'blob'` so the JWT interceptor attaches the access token — a plain `<a href>` would not, since browser navigation doesn't go through Angular's HTTP pipeline.
+
+The response blob is turned into an object URL, downloaded via a programmatically-clicked `<a download>`, then the object URL is revoked. The export button disables itself while a request is in flight and shows an inline error message on 401 (session expired), 403 (insufficient permission), or other failures.
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.

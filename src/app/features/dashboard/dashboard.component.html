@@ -33,10 +33,15 @@
         }
       </div>
       <div class="heading-actions">
-        <a class="btn-secondary" [href]="csvUrl">↓ Export CSV</a>
+        <button type="button" class="btn-secondary" [disabled]="isExporting" (click)="exportCsv()">
+          {{ isExporting ? 'Exporting…' : '↓ Export CSV' }}
+        </button>
         <a class="btn-primary" routerLink="/appointments/create">+ Create Appointment</a>
       </div>
     </div>
+    @if (exportError) {
+      <p class="export-error">{{ exportError }}</p>
+    }
 
     <!-- Loading state -->
     @if (isLoading) {

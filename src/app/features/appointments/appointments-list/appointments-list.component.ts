@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
 import { AppointmentModel, AppointmentStatus, ClientModel, ServiceModel } from '../../../core/models';
 import { AppointmentService } from '../../../core/services/appointment.service';
-import { environment } from '../../../core/environments/environment';
+import { ReportService } from '../../../core/services/report.service';
 
 @Component({
   selector: 'app-appointments-list',
@@ -16,7 +17,8 @@ import { environment } from '../../../core/environments/environment';
   styleUrl: './appointments-list.component.scss'
 })
 export class AppointmentsListComponent implements OnInit {
-  readonly csvUrl = `${environment.apiUrl}/report/appointments.csv`;
+  isExporting = false;
+  exportError: string | null = null;
 
   readonly statuses: Array<AppointmentStatus | ''> = [
     '',
@@ -42,7 +44,8 @@ export class AppointmentsListComponent implements OnInit {
 
   constructor(
     private readonly formBuilder: FormBuilder,
-    private readonly appointmentService: AppointmentService
+    private readonly appointmentService: AppointmentService,
+    private readonly reportService: ReportService
   ) {}
 
   ngOnInit(): void {
@@ -67,5 +70,50 @@ export class AppointmentsListComponent implements OnInit {
 
   getStatusClass(status: AppointmentStatus): string {
     return status.toLowerCase();
+  }
+
+  exportCsv(): void {
+    if (this.isExporting) {
+      return;
+    }
+
+    this.isExporting = true;
+    this.exportError = null;
+
+    const filters = this.filterForm.getRawValue();
+
+    this.reportService
+      .exportAppointmentsCsv({
+        status: filters.status ?? '',
+        serviceId: filters.serviceId ?? '',
+        clientId: filters.clientId ?? ''
+      })
+      .subscribe({
+        next: (blob) => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+
+          link.href = url;
+          link.download = `appointments-${new Date().toISOString().slice(0, 10)}.csv`;
+
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          URL.revokeObjectURL(url);
+
+          this.isExporting = false;
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 401) {
+            this.exportError = 'Your session has expired. Please log in again to export.';
+          } else if (error.status === 403) {
+            this.exportError = 'You do not have permission to export appointments.';
+          } else {
+            this.exportError = 'Failed to export appointments. Please try again.';
+          }
+
+          this.isExporting = false;
+        }
+      });
   }
 }
