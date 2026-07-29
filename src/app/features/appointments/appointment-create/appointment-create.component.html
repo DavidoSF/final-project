@@ -15,22 +15,36 @@
 
         <div class="form-group">
           <label for="clientId">Client</label>
-          <select id="clientId" formControlName="clientId">
+          <select
+            id="clientId"
+            formControlName="clientId"
+            [class.is-invalid]="form.get('clientId')?.invalid && form.get('clientId')?.touched"
+          >
             <option value="">Select a client</option>
             @for (client of clients; track client.id) {
               <option [value]="client.id">{{ client.fullName }} — {{ client.companyName }}</option>
             }
           </select>
+          @if (form.get('clientId')?.invalid && form.get('clientId')?.touched) {
+            <span class="error-msg">Please select a client.</span>
+          }
         </div>
 
         <div class="form-group">
           <label for="serviceId">Service</label>
-          <select id="serviceId" formControlName="serviceId">
+          <select
+            id="serviceId"
+            formControlName="serviceId"
+            [class.is-invalid]="form.get('serviceId')?.invalid && form.get('serviceId')?.touched"
+          >
             <option value="">Select a service</option>
             @for (service of services; track service.id) {
               <option [value]="service.id">{{ service.name }} — {{ service.price | currency }}</option>
             }
           </select>
+          @if (form.get('serviceId')?.invalid && form.get('serviceId')?.touched) {
+            <span class="error-msg">Please select a service.</span>
+          }
         </div>
 
         <div class="form-row">
@@ -46,7 +60,15 @@
 
           <div class="form-group">
             <label for="scheduledDate">Scheduled date</label>
-            <input id="scheduledDate" formControlName="scheduledDate" type="datetime-local" />
+            <input
+              id="scheduledDate"
+              formControlName="scheduledDate"
+              type="datetime-local"
+              [class.is-invalid]="form.get('scheduledDate')?.invalid && form.get('scheduledDate')?.touched"
+            />
+            @if (form.get('scheduledDate')?.invalid && form.get('scheduledDate')?.touched) {
+              <span class="error-msg">Pick both a date and a time.</span>
+            }
           </div>
         </div>
 

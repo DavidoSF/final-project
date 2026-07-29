@@ -95,12 +95,22 @@
       border-color: #4299e1;
       box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
     }
+
+    &.is-invalid {
+      border-color: #e53e3e;
+    }
   }
 
   textarea {
     resize: vertical;
     min-height: 90px;
   }
+}
+
+.error-msg {
+  font-size: 0.8rem;
+  color: #e53e3e;
+  margin-top: 0.3rem;
 }
 
 .form-row {
