@@ -1,66 +1,79 @@
 <div class="login-wrapper">
-  <div class="login-card">
-    <div class="login-header">
-      <h1>SME Service Manager</h1>
-      <p>Sign in to your account</p>
+  <div class="login-card split">
+    <div class="left-panel" aria-hidden="true">
+      <div class="brand-overlay">
+        <h2>WELCOME</h2>
+        <p class="credit">SME Service Manager</p>
+      </div>
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="right-panel">
+      <div class="login-panel">
+        <h1>Login</h1>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
 
-      <div class="form-group">
-        <label for="email">Email address</label>
-        <input
-          id="email"
-          type="email"
-          formControlName="email"
-          placeholder="you@example.com"
-          autocomplete="email"
-          [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
-        />
-        @if (loginForm.get('email')?.errors?.['required'] && loginForm.get('email')?.touched) {
-          <span class="error-msg">Email is required.</span>
-        } @else if (loginForm.get('email')?.errors?.['email'] && loginForm.get('email')?.touched) {
-          <span class="error-msg">Enter a valid email address.</span>
-        }
-      </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="Email"
+              autocomplete="email"
+              [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+            />
+            @if (loginForm.get('email')?.errors?.['required'] && loginForm.get('email')?.touched) {
+              <span class="error-msg">Email is required.</span>
+            } @else if (loginForm.get('email')?.errors?.['email'] && loginForm.get('email')?.touched) {
+              <span class="error-msg">Enter a valid email address.</span>
+            }
+          </div>
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <div class="input-group">
-          <input
-            id="password"
-            [type]="showPassword ? 'text' : 'password'"
-            formControlName="password"
-            placeholder="••••••••"
-            autocomplete="current-password"
-            [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-          />
-          <button type="button" class="toggle-pw" (click)="togglePassword()" tabindex="-1">
-            {{ showPassword ? 'Hide' : 'Show' }}
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-group">
+              <input
+                id="password"
+                [type]="showPassword ? 'text' : 'password'"
+                formControlName="password"
+                placeholder="Password"
+                autocomplete="current-password"
+                [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+              />
+              <button type="button" class="toggle-pw" (click)="togglePassword()" tabindex="-1">
+                {{ showPassword ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+            @if (loginForm.get('password')?.errors?.['required'] && loginForm.get('password')?.touched) {
+              <span class="error-msg">Password is required.</span>
+            }
+          </div>
+
+          @if (error$ | async; as errorMsg) {
+            <div class="alert-error" role="alert">{{ errorMsg }}</div>
+          }
+
+          <button
+            type="submit"
+            class="btn-primary"
+            [disabled]="(isLoading$ | async) === true"
+          >
+            @if (isLoading$ | async) {
+              <span class="spinner" aria-hidden="true"></span>
+              Signing in…
+            } @else {
+              Login
+            }
           </button>
-        </div>
-        @if (loginForm.get('password')?.errors?.['required'] && loginForm.get('password')?.touched) {
-          <span class="error-msg">Password is required.</span>
-        }
+
+          <div class="aux-links">
+            <a class="forgot" routerLink="/forgot">Forgot password?</a>
+          </div>
+
+        </form>
+
+        <div class="signup-note">Don't have an account? <a routerLink="/register">Sign up</a></div>
       </div>
-
-      @if (error$ | async; as errorMsg) {
-        <div class="alert-error" role="alert">{{ errorMsg }}</div>
-      }
-
-      <button
-        type="submit"
-        class="btn-primary"
-        [disabled]="(isLoading$ | async) === true"
-      >
-        @if (isLoading$ | async) {
-          <span class="spinner" aria-hidden="true"></span>
-          Signing in…
-        } @else {
-          Sign in
-        }
-      </button>
-
-    </form>
+    </div>
   </div>
 </div>
